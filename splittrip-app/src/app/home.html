@@ -1,0 +1,60 @@
+<!-- Navigation / Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo">
+      <span class="logo-icon">✈️</span>
+      <span class="logo-text">SplitTrip</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-links">
+      <a href="#" class="nav-link" (click)="navigateTo('explore'); $event.preventDefault()">Explore Trips</a>
+      <a href="#" class="nav-link" (click)="navigateTo('my-trips'); $event.preventDefault()">My Trips</a>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="navbar-profile">
+      <div class="profile-avatar">{{ currentUser().avatar }}</div>
+      <span class="profile-name">{{ currentUser().name }}</span>
+      <button class="btn-signout" (click)="logout()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <!-- Background Image with Gradient Overlay -->
+  <div class="hero-background"></div>
+  <div class="hero-overlay"></div>
+
+  <!-- Hero Content -->
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Plan Your Perfect <span class="highlight">Adventure</span>
+    </h1>
+    <p class="hero-subtitle">
+      Discover amazing destinations, split expenses with friends, and travel smarter with AI-powered planning
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="hero-ctas">
+      <button class="btn btn-primary" (click)="startPlanning()">Start Planning</button>
+      <button class="btn btn-secondary" (click)="explorePlans()">Explore Trips</button>
+    </div>
+
+    <!-- Stats / Highlights Row -->
+    <div class="stats-row">
+      <div class="stat-item" *ngFor="let stat of stats()">
+        <span class="stat-icon">{{ stat.icon }}</span>
+        <div class="stat-content">
+          <span class="stat-number">{{ stat.number }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="home-container"></main>
+

@@ -1,0 +1,140 @@
+<!-- Navigation / Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo" (click)="goHome()" style="cursor: pointer;">
+      <span class="logo-icon">✈️</span>
+      <span class="logo-text">SplitTrip</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-links">
+      <a href="#" class="nav-link" (click)="goHome(); $event.preventDefault()">Home</a>
+      <a href="#" class="nav-link" (click)="$event.preventDefault()">My Trips</a>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="navbar-profile">
+      <div class="profile-avatar">👤</div>
+      <span class="profile-name">Alex Morgan</span>
+      <button class="btn-signout">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="planning-container">
+  <div class="planning-header">
+    <h1>Plan Your Trip</h1>
+    <p>Create a new trip and start planning with your friends</p>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="showSuccess()">
+    <span class="success-icon">✅</span>
+    <p>Trip created successfully! Redirecting...</p>
+  </div>
+
+  <!-- Planning Form -->
+  <div class="planning-form-wrapper">
+    <form class="planning-form" (ngSubmit)="createTrip()">
+      <!-- Trip Name -->
+      <div class="form-group">
+        <label for="tripName">Trip Name *</label>
+        <input
+          type="text"
+          id="tripName"
+          placeholder="e.g., Paris Summer Vacation"
+          [(ngModel)]="tripName"
+          name="tripName"
+          required />
+      </div>
+
+      <!-- Destination -->
+      <div class="form-group">
+        <label for="destination">Destination *</label>
+        <input
+          type="text"
+          id="destination"
+          placeholder="e.g., Paris, France"
+          [(ngModel)]="destination"
+          name="destination"
+          required />
+      </div>
+
+      <!-- Date Range -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input
+            type="date"
+            id="startDate"
+            [(ngModel)]="startDate"
+            name="startDate" />
+        </div>
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input
+            type="date"
+            id="endDate"
+            [(ngModel)]="endDate"
+            name="endDate" />
+        </div>
+      </div>
+
+      <!-- Members & Budget -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="members">Number of Members</label>
+          <input
+            type="number"
+            id="members"
+            placeholder="e.g., 4"
+            [(ngModel)]="members"
+            name="members"
+            min="1" />
+        </div>
+        <div class="form-group">
+          <label for="budget">Total Budget ($)</label>
+          <input
+            type="number"
+            id="budget"
+            placeholder="e.g., 5000"
+            [(ngModel)]="budget"
+            name="budget"
+            min="0" />
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create Trip</button>
+        <button type="button" class="btn btn-secondary" (click)="goHome()">Cancel</button>
+      </div>
+    </form>
+
+    <!-- Info Cards -->
+    <div class="info-cards">
+      <div class="info-card">
+        <span class="info-icon">💡</span>
+        <h4>Smart Planning</h4>
+        <p>Use AI to optimize your itinerary and discover hidden gems</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">👥</span>
+        <h4>Invite Friends</h4>
+        <p>Easily invite friends and collaborate on trip planning</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">💰</span>
+        <h4>Split Expenses</h4>
+        <p>Track shared expenses and settle accounts automatically</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">📍</span>
+        <h4>Map View</h4>
+        <p>Visualize all activities and locations on an interactive map</p>
+      </div>
+    </div>
+  </div>
+</div>

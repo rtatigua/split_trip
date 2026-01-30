@@ -1,0 +1,77 @@
+<!-- Navigation / Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo" (click)="goHome()" style="cursor: pointer;">
+      <span class="logo-icon">✈️</span>
+      <span class="logo-text">SplitTrip</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-links">
+      <a href="#" class="nav-link" (click)="goHome(); $event.preventDefault()">Home</a>
+      <a href="#" class="nav-link" (click)="$event.preventDefault()">My Trips</a>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="navbar-profile">
+      <div class="profile-avatar">👤</div>
+      <span class="profile-name">Alex Morgan</span>
+      <button class="btn-signout">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="trips-container">
+  <div class="trips-header">
+    <h1>My Trips</h1>
+    <p>Manage and organize your travel plans</p>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button 
+      *ngFor="let filter of ['All', 'Ongoing', 'Planning', 'Completed']"
+      class="filter-btn"
+      [class.active]="selectedFilter() === filter"
+      (click)="setFilter(filter)">
+      {{ filter }}
+    </button>
+  </div>
+
+  <!-- Trips Grid -->
+  <div class="trips-grid">
+    <div class="trip-card" *ngFor="let trip of getFilteredTrips()">
+      <div class="trip-image">{{ trip.image }}</div>
+      
+      <div class="trip-content">
+        <div class="trip-header">
+          <h3>{{ trip.title }}</h3>
+          <span class="trip-status" [class]="trip.status.toLowerCase()">{{ trip.status }}</span>
+        </div>
+
+        <p class="trip-destination">{{ trip.destination }}</p>
+        
+        <div class="trip-meta">
+          <span>⏱️ {{ trip.duration }}</span>
+          <span>👥 {{ trip.members }} people</span>
+          <span>💰 {{ trip.budget }}</span>
+        </div>
+
+        <div class="trip-actions">
+          <button class="btn btn-view" (click)="viewTrip(trip.id)">View Details</button>
+          <button class="btn btn-edit" (click)="editTrip(trip.id)">Edit</button>
+          <button class="btn btn-delete" (click)="deleteTrip(trip.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="getFilteredTrips().length === 0">
+    <span class="empty-icon">📭</span>
+    <p>No {{ selectedFilter() !== 'All' ? selectedFilter().toLowerCase() : '' }} trips found</p>
+    <button class="btn btn-primary" (click)="goHome()">Plan a New Trip</button>
+  </div>
+</div>
