@@ -56,5 +56,103 @@
   </div>
 </section>
 
-<main class="home-container"></main>
+<!-- Live Data Section -->
+<main class="home-container">
+  <div class="data-section">
+    <h2>Live Destination Preview</h2>
+    <p>Check weather and explore destinations before you book</p>
+
+    <!-- City Selector -->
+    <div class="city-selector">
+      <button 
+        *ngFor="let city of cities()"
+        class="city-btn"
+        [class.active]="selectedCity() === city.name"
+        (click)="loadCityData(city.name)">
+        {{ city.name }}
+      </button>
+    </div>
+
+    <!-- Live Data Cards -->
+    <div class="data-grid">
+      <!-- Weather Card -->
+      <div class="data-card weather-card">
+        <h3>Current Weather</h3>
+        <div class="loading" *ngIf="isLoading()">Loading real-time data...</div>
+        <div class="weather-content" *ngIf="!isLoading()">
+          <div class="weather-main">
+            <span class="weather-icon">{{ weatherData().icon }}</span>
+            <div class="weather-info">
+              <div class="temp">{{ weatherData().temperature }}°C</div>
+              <div class="description">{{ weatherData().description }}</div>
+            </div>
+          </div>
+          <div class="weather-details">
+            <div class="detail">
+              <span>💧 Humidity</span>
+              <span>{{ weatherData().humidity }}%</span>
+            </div>
+            <div class="detail">
+              <span>💨 Wind</span>
+              <span>{{ weatherData().windSpeed }} km/h</span>
+            </div>
+          </div>
+          <p class="api-note">📡 Real-time data from Open-Meteo API</p>
+        </div>
+      </div>
+
+      <!-- Destination Info Card -->
+      <div class="data-card destination-card">
+        <h3>About {{ selectedCity() }}</h3>
+        <div class="loading" *ngIf="isLoading()">Loading destination info...</div>
+        <div class="destination-content" *ngIf="!isLoading()">
+          <p class="description">{{ destinationInfo().description | slice:0:300 }}...</p>
+          <p class="api-note">📡 Information from Wikipedia API</p>
+        </div>
+      </div>
+
+      <!-- CTA Card -->
+      <div class="data-card cta-card">
+        <h3>Ready to Explore?</h3>
+        <p>Start planning a group trip to {{ selectedCity() }} with your friends and split expenses effortlessly.</p>
+        <button class="btn btn-primary" (click)="startPlanning()" style="width: 100%; margin-top: 12px;">
+          Plan Trip to {{ selectedCity() }}
+        </button>
+      </div>
+
+      <!-- Currency Exchange / Local Currency Preview -->
+      <div class="data-card exchange-card">
+        <h3>Currency Preview — {{ selectedCity() }}</h3>
+
+        <div class="exchange-controls">
+          <label>Base</label>
+          <select [ngModel]="selectedBaseCurrency()" (ngModelChange)="changeBaseCurrency($event)">
+            <option *ngFor="let b of baseCurrencies" [value]="b">{{ b }}</option>
+          </select>
+          <label>Target</label>
+          <select [ngModel]="selectedTargetCurrency()" (ngModelChange)="selectedTargetCurrency.set($event)">
+            <option *ngFor="let c of availableCurrencies()" [value]="c">{{ c }}</option>
+          </select>
+
+          <label>Amount</label>
+          <input type="number" min="0" [ngModel]="amount()" (ngModelChange)="amount.set($event)" />
+        </div>
+
+        <div class="exchange-result">
+          <div *ngIf="isLoadingRates()" class="loading-rates">Loading exchange rates...</div>
+          <div *ngIf="!isLoadingRates()">
+            <p class="rate-line">
+              1 {{ selectedBaseCurrency() }} = 
+              {{ selectedBaseCurrency() === selectedTargetCurrency() ? '1.0000' : (currencyRates()[selectedTargetCurrency()] ? (currencyRates()[selectedTargetCurrency()].toFixed(4)) : '—') }} 
+              {{ selectedTargetCurrency() }}
+            </p>
+            <p class="rate-line">{{ amount() }} {{ selectedBaseCurrency() }} = {{ getConvertedAmount() !== null ? getConvertedAmount() : '—' }} {{ selectedTargetCurrency() }}</p>
+          </div>
+        </div>
+
+        <p class="api-note">📡 Real-time rates from exchangerate.host API</p>
+      </div>
+    </div>
+  </div>
+</main>
 

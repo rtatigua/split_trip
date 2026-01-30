@@ -18,11 +18,50 @@ export class Planning {
   members = signal('');
   budget = signal('');
   showSuccess = signal(false);
+  errors = signal<string[]>([]);
 
   constructor(private router: Router) {}
 
+  isFormValid(): boolean {
+    this.errors.set([]);
+    const validationErrors: string[] = [];
+
+    if (!this.tripName().trim()) {
+      validationErrors.push('Trip name is required');
+    }
+    if (!this.destination().trim()) {
+      validationErrors.push('Destination is required');
+    }
+    if (!this.startDate()) {
+      validationErrors.push('Start date is required');
+    }
+    if (!this.endDate()) {
+      validationErrors.push('End date is required');
+    }
+    if (this.startDate() && this.endDate() && new Date(this.startDate()) >= new Date(this.endDate())) {
+      validationErrors.push('End date must be after start date');
+    }
+    if (!this.members().trim()) {
+      validationErrors.push('Number of members is required');
+    } else if (isNaN(Number(this.members())) || Number(this.members()) < 1) {
+      validationErrors.push('Members must be a valid number greater than 0');
+    }
+    if (!this.budget().trim()) {
+      validationErrors.push('Budget is required');
+    } else if (isNaN(Number(this.budget())) || Number(this.budget()) <= 0) {
+      validationErrors.push('Budget must be a valid amount greater than 0');
+    }
+
+    if (validationErrors.length > 0) {
+      this.errors.set(validationErrors);
+      return false;
+    }
+
+    return true;
+  }
+
   createTrip() {
-    if (this.tripName() && this.destination()) {
+    if (this.isFormValid()) {
       this.showSuccess.set(true);
       setTimeout(() => {
         this.router.navigate(['/my-trips']);

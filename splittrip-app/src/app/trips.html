@@ -48,21 +48,29 @@
       <div class="trip-content">
         <div class="trip-header">
           <h3>{{ trip.title }}</h3>
-          <span class="trip-status" [class]="trip.status.toLowerCase()">{{ trip.status }}</span>
+          <span class="trip-status" [ngClass]="trip.status.toLowerCase()">{{ trip.status }}</span>
         </div>
 
         <p class="trip-destination">{{ trip.destination }}</p>
         
+        <p class="trip-owner">👤 Led by {{ trip.ownerName }}</p>
+        
         <div class="trip-meta">
           <span>⏱️ {{ trip.duration }}</span>
-          <span>👥 {{ trip.members }} people</span>
+          <span>👥 {{ trip.memberCount }} member<span *ngIf="trip.memberCount !== 1">s</span></span>
           <span>💰 {{ trip.budget }}</span>
         </div>
 
         <div class="trip-actions">
           <button class="btn btn-view" (click)="viewTrip(trip.id)">View Details</button>
-          <button class="btn btn-edit" (click)="editTrip(trip.id)">Edit</button>
-          <button class="btn btn-delete" (click)="deleteTrip(trip.id)">Delete</button>
+          
+          <!-- Owner-only buttons -->
+          <button *ngIf="isOwner(trip)" class="btn btn-edit" (click)="editTrip(trip.id)">Edit</button>
+          <button *ngIf="isOwner(trip)" class="btn btn-delete" (click)="deleteTrip(trip.id)">Delete</button>
+          
+          <!-- Member action buttons -->
+          <button *ngIf="!isOwner(trip) && isMember(trip)" class="btn btn-leave" (click)="leaveTrip(trip)">Leave Trip</button>
+          <button *ngIf="!isOwner(trip) && !isMember(trip)" class="btn btn-join" (click)="joinTrip(trip)">Join Trip</button>
         </div>
       </div>
     </div>
@@ -73,5 +81,18 @@
     <span class="empty-icon">📭</span>
     <p>No {{ selectedFilter() !== 'All' ? selectedFilter().toLowerCase() : '' }} trips found</p>
     <button class="btn btn-primary" (click)="goHome()">Plan a New Trip</button>
+  </div>
+
+  <!-- Currency Exchange Rates -->
+  <div class="currency-widget">
+    <h2>💱 USD Exchange Rates</h2>
+    <div class="loading-rates" *ngIf="isLoadingRates()">Loading exchange rates...</div>
+    <div class="rates-container" *ngIf="!isLoadingRates() && (currencyRates() | keyvalue).length > 0">
+      <div class="rate-item" *ngFor="let rate of (currencyRates() | keyvalue)">
+        <div class="rate-code">{{ rate.key }}</div>
+        <div class="rate-value">{{ rate.value.toFixed(2) }}</div>
+      </div>
+    </div>
+    <p class="api-note">📡 Real-time rates from exchangerate.host API</p>
   </div>
 </div>

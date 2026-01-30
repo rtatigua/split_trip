@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ApiService, CurrencyRates } from './api.service';
+import { FirebaseService, Trip, User } from './firebase.service';
 
 @Component({
   selector: 'app-trips',
@@ -9,53 +11,51 @@ import { Router } from '@angular/router';
   templateUrl: './trips.html',
   styleUrls: ['./trips.css']
 })
-export class Trips {
-  trips = signal([
-    {
-      id: 1,
-      title: 'Paris City Break',
-      destination: '🇫🇷 Paris',
-      duration: '5 days',
-      members: 4,
-      budget: '$2,400',
-      image: '🗼',
-      status: 'Ongoing'
-    },
-    {
-      id: 2,
-      title: 'Tokyo Adventure',
-      destination: '🇯🇵 Tokyo',
-      duration: '7 days',
-      members: 3,
-      budget: '$3,200',
-      image: '🗾',
-      status: 'Planning'
-    },
-    {
-      id: 3,
-      title: 'Barcelona Beach',
-      destination: '🇪🇸 Barcelona',
-      duration: '4 days',
-      members: 5,
-      budget: '$1,800',
-      image: '🏖️',
-      status: 'Planning'
-    },
-    {
-      id: 4,
-      title: 'New York Exploration',
-      destination: '🇺🇸 NYC',
-      duration: '6 days',
-      members: 2,
-      budget: '$2,800',
-      image: '🗽',
-      status: 'Completed'
-    }
-  ]);
-
+export class Trips implements OnInit {
+  trips = signal<Trip[]>([]);
   selectedFilter = signal<'All' | 'Ongoing' | 'Planning' | 'Completed'>('All');
+  isLoadingTrips = signal(false);
+  currencyRates = signal<CurrencyRates>({});
+  isLoadingRates = signal(false);
+  currentUser = signal<User>({
+    id: 'user-001',
+    name: 'Alex Morgan',
+    avatar: '👤',
+    email: 'alex@example.com'
+  });
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private apiService: ApiService,
+    private firebaseService: FirebaseService
+  ) {}
+
+  ngOnInit() {
+    this.loadTrips();
+    this.loadCurrentUser();
+    this.loadCurrencyRates();
+  }
+
+  loadCurrentUser() {
+    this.firebaseService.getCurrentUser().subscribe(user => {
+      this.currentUser.set(user);
+    });
+  }
+
+  loadTrips() {
+    this.isLoadingTrips.set(true);
+    this.firebaseService.getTrips().subscribe(
+      trips => {
+        console.log('Loaded trips:', trips);
+        this.trips.set(trips);
+        this.isLoadingTrips.set(false);
+      },
+      error => {
+        console.error('Error fetching trips:', error);
+        this.isLoadingTrips.set(false);
+      }
+    );
+  }
 
   setFilter(filter: string) {
     this.selectedFilter.set(filter as 'All' | 'Ongoing' | 'Planning' | 'Completed');
@@ -68,18 +68,94 @@ export class Trips {
     return this.trips().filter(trip => trip.status === this.selectedFilter());
   }
 
-  viewTrip(tripId: number) {
+  isOwner(trip: Trip): boolean {
+    return trip.ownerId === this.currentUser().id;
+  }
+
+  isMember(trip: Trip): boolean {
+    return trip.members.includes(this.currentUser().id);
+  }
+
+  loadCurrencyRates() {
+    this.isLoadingRates.set(true);
+    this.apiService.getCurrencyRates('USD').subscribe({
+      next: (data) => {
+        this.currencyRates.set(data);
+        this.isLoadingRates.set(false);
+      },
+      error: () => {
+        this.currencyRates.set({
+          EUR: 0.92,
+          GBP: 0.79,
+          JPY: 149.50,
+          AUD: 1.53,
+          CAD: 1.36,
+          CHF: 0.88,
+          INR: 83.12,
+          MXN: 17.05,
+          SGD: 1.34,
+          HKD: 7.81
+        });
+        this.isLoadingRates.set(false);
+      }
+    });
+  }
+
+  joinTrip(trip: Trip) {
+    this.firebaseService.joinTrip(trip.id, this.currentUser().id).subscribe(
+      updated => {
+        if (updated) {
+          console.log('Joined trip:', trip.title);
+          this.loadTrips(); // Reload trips to update UI
+        }
+      }
+    );
+  }
+
+  leaveTrip(trip: Trip) {
+    if (confirm('Are you sure you want to leave this trip?')) {
+      this.firebaseService.leaveTrip(trip.id, this.currentUser().id).subscribe(
+        updated => {
+          if (updated) {
+            console.log('Left trip:', trip.title);
+            this.loadTrips(); // Reload trips to update UI
+          }
+        }
+      );
+    }
+  }
+
+  viewTrip(tripId: string) {
     console.log('Viewing trip:', tripId);
     // Navigate to trip details
   }
 
-  editTrip(tripId: number) {
-    console.log('Editing trip:', tripId);
+  editTrip(tripId: string) {
+    const trip = this.trips().find(t => t.id === tripId);
+    if (trip && this.isOwner(trip)) {
+      console.log('Editing trip:', tripId);
+      // Navigate to edit page
+    } else {
+      alert('You can only edit trips you created');
+    }
   }
 
-  deleteTrip(tripId: number) {
-    console.log('Deleting trip:', tripId);
-    this.trips.set(this.trips().filter(trip => trip.id !== tripId));
+  deleteTrip(tripId: string) {
+    const trip = this.trips().find(t => t.id === tripId);
+    if (trip && this.isOwner(trip)) {
+      if (confirm(`Are you sure you want to delete "${trip.title}"?`)) {
+        this.firebaseService.deleteTrip(tripId, this.currentUser().id).subscribe(
+          success => {
+            if (success) {
+              console.log('Deleted trip:', tripId);
+              this.loadTrips(); // Reload trips to update UI
+            }
+          }
+        );
+      }
+    } else {
+      alert('You can only delete trips you created');
+    }
   }
 
   goHome() {

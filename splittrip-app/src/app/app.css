@@ -12,11 +12,30 @@ html, body {
   height: 100%;
 }
 
+:root {
+  --primary: #FF6B35;
+  --primary-dark: #E5511F;
+  --secondary: #00A8A8;
+  --secondary-light: #00D4D4;
+  --dark-text: #1a1a1a;
+  --light-text: #666666;
+  --white: #ffffff;
+  --light-bg: #f8f9fa;
+  --border-light: #e8e8e8;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
+  --radius: 12px;
+  --radius-lg: 16px;
+}
+
 body {
-  background: #f8fafc;
+  background: var(--light-bg);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--dark-text);
+  line-height: 1.6;
 }
 
 app-root {
