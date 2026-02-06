@@ -1,0 +1,175 @@
+<!-- Navigation / Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo">
+      <span class="logo-icon">✈️</span>
+      <span class="logo-text">SplitTrip</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-links">
+      <a href="#" class="nav-link" (click)="navigateTo('explore'); $event.preventDefault()">Explore Trips</a>
+      <a href="#" class="nav-link" (click)="navigateTo('my-trips'); $event.preventDefault()">My Trips</a>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="navbar-profile">
+      <div class="profile-avatar">{{ currentUser().avatar }}</div>
+      <span class="profile-name">{{ currentUser().name }}</span>
+      <button class="btn-signout" (click)="logout()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <!-- Background Image with Gradient Overlay -->
+  <div class="hero-background"></div>
+  <div class="hero-overlay"></div>
+
+  <!-- Hero Content -->
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Plan Your Perfect <span class="highlight">Adventure</span>
+    </h1>
+    <p class="hero-subtitle">
+      Discover amazing destinations, split expenses with friends, and travel smarter with AI-powered planning
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="hero-ctas">
+      <button class="btn btn-primary" (click)="startPlanning()">Start Planning</button>
+      <button class="btn btn-secondary" (click)="explorePlans()">Explore Trips</button>
+    </div>
+
+    <!-- Stats / Highlights Row -->
+    <div class="stats-row">
+      @for (stat of stats(); track stat) {
+        <div class="stat-item">
+          <span class="stat-icon">{{ stat.icon }}</span>
+          <div class="stat-content">
+            <span class="stat-number">{{ stat.number }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Live Data Section -->
+<main class="home-container">
+  <div class="data-section">
+    <h2>Live Destination Preview</h2>
+    <p>Check weather and explore destinations before you book</p>
+
+    <!-- City Selector -->
+    <div class="city-selector">
+      @for (city of cities(); track city.name) {
+        <button 
+          class="city-btn"
+          [class.active]="selectedCity() === city.name"
+          (click)="loadCityData(city.name)">
+          {{ city.name }}
+        </button>
+      }
+    </div>
+
+    <!-- Live Data Cards -->
+    <div class="data-grid">
+      <!-- Weather Card -->
+      <div class="data-card weather-card">
+        <h3>Current Weather</h3>
+        @if (isLoading()) {
+          <div class="loading">Loading real-time data...</div>
+        }
+        @if (!isLoading()) {
+          <div class="weather-content">
+          <div class="weather-main">
+            <span class="weather-icon">{{ weatherData().icon }}</span>
+            <div class="weather-info">
+              <div class="temp">{{ weatherData().temperature }}°C</div>
+              <div class="description">{{ weatherData().description }}</div>
+            </div>
+          </div>
+          <div class="weather-details">
+            <div class="detail">
+              <span>💧 Humidity</span>
+              <span>{{ weatherData().humidity }}%</span>
+            </div>
+            <div class="detail">
+              <span>💨 Wind</span>
+              <span>{{ weatherData().windSpeed }} km/h</span>
+            </div>
+          </div>
+          <p class="api-note">📡 Real-time data from Open-Meteo API</p>
+        </div>
+        }
+      </div>
+
+      <!-- Destination Info Card -->
+      <div class="data-card destination-card">
+        <h3>About {{ selectedCity() }}</h3>
+        @if (isLoading()) {
+          <div class="loading">Loading destination info...</div>
+        }
+        @if (!isLoading()) {
+          <div class="destination-content">
+            <p class="description">{{ destinationInfo().description | slice:0:300 }}...</p>
+            <p class="api-note">📡 Information from Wikipedia API</p>
+          </div>
+        }
+      </div>
+
+      <!-- CTA Card -->
+      <div class="data-card cta-card">
+        <h3>Ready to Explore?</h3>
+        <p>Start planning a group trip to {{ selectedCity() }} with your friends and split expenses effortlessly.</p>
+        <button class="btn btn-primary" (click)="startPlanning()" style="width: 100%; margin-top: 12px;">
+          Plan Trip to {{ selectedCity() }}
+        </button>
+      </div>
+
+      <!-- Currency Exchange / Local Currency Preview -->
+      <div class="data-card exchange-card">
+        <h3>Currency Preview — {{ selectedCity() }}</h3>
+
+        <div class="exchange-controls">
+          <label>Base</label>
+          <select [ngModel]="selectedBaseCurrency()" (ngModelChange)="changeBaseCurrency($event)">
+            @for (b of baseCurrencies; track b) {
+              <option [value]="b">{{ b }}</option>
+            }
+          </select>
+          <label>Target</label>
+          <select [ngModel]="selectedTargetCurrency()" (ngModelChange)="selectedTargetCurrency.set($event)">
+            @for (c of availableCurrencies(); track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+
+          <label>Amount</label>
+          <input type="number" min="0" [ngModel]="amount()" (ngModelChange)="amount.set($event)" />
+        </div>
+
+        <div class="exchange-result">
+          @if (isLoadingRates()) {
+            <div class="loading-rates">Loading exchange rates...</div>
+          }
+          @if (!isLoadingRates()) {
+            <p class="rate-line">
+              1 {{ selectedBaseCurrency() }} = 
+              {{ selectedBaseCurrency() === selectedTargetCurrency() ? '1.0000' : (currencyRates()[selectedTargetCurrency()] ? (currencyRates()[selectedTargetCurrency()].toFixed(4)) : '—') }} 
+              {{ selectedTargetCurrency() }}
+            </p>
+            <p class="rate-line">{{ amount() }} {{ selectedBaseCurrency() }} = {{ getConvertedAmount() !== null ? getConvertedAmount() : '—' }} {{ selectedTargetCurrency() }}</p>
+          }
+        </div>
+
+        <p class="api-note">📡 Real-time rates from exchangerate.host API</p>
+      </div>
+    </div>
+  </div>
+</main>
+

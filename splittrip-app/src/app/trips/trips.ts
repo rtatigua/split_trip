@@ -1,8 +1,8 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ApiService, CurrencyRates } from './api.service';
-import { FirebaseService, Trip, User } from './firebase.service';
+import { ApiService, CurrencyRates } from '../api.service';
+import { FirebaseService, Trip, User } from '../firebase.service';
 
 @Component({
   selector: 'app-trips',

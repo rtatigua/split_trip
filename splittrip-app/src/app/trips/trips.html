@@ -43,9 +43,8 @@
 
   <!-- Trips Grid -->
   <div class="trips-grid">
-    @for (trip of getFilteredTrips(); track trip.id) {
-      <div class="trip-card">
-        <div class="trip-image">{{ trip.image }}</div>
+    <div class="trip-card" *ngFor="let trip of getFilteredTrips()">
+      <div class="trip-image">{{ trip.image }}</div>
       
       <div class="trip-content">
         <div class="trip-header">
@@ -59,7 +58,7 @@
         
         <div class="trip-meta">
           <span>⏱️ {{ trip.duration }}</span>
-          <span>👥 {{ trip.memberCount }} member@if (trip.memberCount !== 1) {s}</span>
+          <span>👥 {{ trip.memberCount }} member{{ trip.memberCount !== 1 ? 's' : '' }}</span>
           <span>💰 {{ trip.budget }}</span>
         </div>
 
@@ -79,9 +78,8 @@
           @if (!isOwner(trip) && !isMember(trip)) {
             <button class="btn btn-join" (click)="joinTrip(trip)">Join Trip</button>
           }
-        </div>
       </div>
-    }
+    </div>
   </div>
 
   <!-- Empty State -->
@@ -101,11 +99,14 @@
     }
     @if (!isLoadingRates() && (currencyRates() | keyvalue).length > 0) {
       <div class="rates-container">
-      <div class="rate-item" *ngFor="let rate of (currencyRates() | keyvalue)">
-        <div class="rate-code">{{ rate.key }}</div>
-        <div class="rate-value">{{ rate.value.toFixed(2) }}</div>
+        @for (rate of (currencyRates() | keyvalue); track rate.key) {
+          <div class="rate-item">
+            <div class="rate-code">{{ rate.key }}</div>
+            <div class="rate-value">{{ rate.value.toFixed(2) }}</div>
+          </div>
+        }
       </div>
-    </div>
-    <p class="api-note">📡 Real-time rates from exchangerate.host API</p>
+      <p class="api-note">📡 Real-time rates from exchangerate.host API</p>
+    }
   </div>
 </div>
