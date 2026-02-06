@@ -23,5 +23,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPLITTRIP_2C7F2 }}
           channelId: live
           projectId: splittrip-2c7f2
-          entryPoint: splittrip-app/src
+          entryPoint: splittrip-app
 
