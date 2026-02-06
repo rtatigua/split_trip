@@ -119,6 +119,16 @@ export class TripDetail implements OnInit {
     this.router.navigate(['/my-trips']);
   }
 
+  goHome() {
+    this.router.navigate(['/']);
+  }
+
+  logout() {
+    // placeholder logout handler
+    console.log('User logged out');
+    this.router.navigate(['/']);
+  }
+
   getStatusColor(): string {
     const trip = this.trip();
     if (!trip) return 'gray';

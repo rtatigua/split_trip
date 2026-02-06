@@ -1,27 +1,4 @@
-<!-- Navigation / Navbar -->
-<nav class="navbar">
-  <div class="navbar-container">
-    <!-- Logo -->
-    <div class="navbar-logo" (click)="goBack()" style="cursor: pointer;">
-      <span class="logo-icon">✈️</span>
-      <span class="logo-text">SplitTrip</span>
-    </div>
-
-    <!-- Navigation Links -->
-    <div class="navbar-links">
-      <a href="#" class="nav-link" (click)="goBack(); $event.preventDefault()">My Trips</a>
-      <a href="#" class="nav-link" (click)="$event.preventDefault()">Home</a>
-    </div>
-
-    <!-- Profile Section -->
-    <div class="navbar-profile">
-      <div class="profile-avatar">👤</div>
-      <span class="profile-name">{{ currentUser().name }}</span>
-      <button class="btn-signout">Sign out</button>
-    </div>
-  </div>
-</nav>
-
+<!-- Header intentionally removed for trip-detail page -->
 <!-- Main Content -->
 <div class="trip-detail-container">
   @if (isLoading()) {
