@@ -45,13 +45,15 @@
 
     <!-- Stats / Highlights Row -->
     <div class="stats-row">
-      <div class="stat-item" *ngFor="let stat of stats()">
-        <span class="stat-icon">{{ stat.icon }}</span>
-        <div class="stat-content">
-          <span class="stat-number">{{ stat.number }}</span>
-          <span class="stat-label">{{ stat.label }}</span>
+      @for (stat of stats(); track stat) {
+        <div class="stat-item">
+          <span class="stat-icon">{{ stat.icon }}</span>
+          <div class="stat-content">
+            <span class="stat-number">{{ stat.number }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </section>
@@ -64,13 +66,14 @@
 
     <!-- City Selector -->
     <div class="city-selector">
-      <button 
-        *ngFor="let city of cities()"
-        class="city-btn"
-        [class.active]="selectedCity() === city.name"
-        (click)="loadCityData(city.name)">
-        {{ city.name }}
-      </button>
+      @for (city of cities(); track city.name) {
+        <button 
+          class="city-btn"
+          [class.active]="selectedCity() === city.name"
+          (click)="loadCityData(city.name)">
+          {{ city.name }}
+        </button>
+      }
     </div>
 
     <!-- Live Data Cards -->
@@ -78,8 +81,11 @@
       <!-- Weather Card -->
       <div class="data-card weather-card">
         <h3>Current Weather</h3>
-        <div class="loading" *ngIf="isLoading()">Loading real-time data...</div>
-        <div class="weather-content" *ngIf="!isLoading()">
+        @if (isLoading()) {
+          <div class="loading">Loading real-time data...</div>
+        }
+        @if (!isLoading()) {
+          <div class="weather-content">
           <div class="weather-main">
             <span class="weather-icon">{{ weatherData().icon }}</span>
             <div class="weather-info">
@@ -99,16 +105,21 @@
           </div>
           <p class="api-note">📡 Real-time data from Open-Meteo API</p>
         </div>
+        }
       </div>
 
       <!-- Destination Info Card -->
       <div class="data-card destination-card">
         <h3>About {{ selectedCity() }}</h3>
-        <div class="loading" *ngIf="isLoading()">Loading destination info...</div>
-        <div class="destination-content" *ngIf="!isLoading()">
-          <p class="description">{{ destinationInfo().description | slice:0:300 }}...</p>
-          <p class="api-note">📡 Information from Wikipedia API</p>
-        </div>
+        @if (isLoading()) {
+          <div class="loading">Loading destination info...</div>
+        }
+        @if (!isLoading()) {
+          <div class="destination-content">
+            <p class="description">{{ destinationInfo().description | slice:0:300 }}...</p>
+            <p class="api-note">📡 Information from Wikipedia API</p>
+          </div>
+        }
       </div>
 
       <!-- CTA Card -->
@@ -127,11 +138,15 @@
         <div class="exchange-controls">
           <label>Base</label>
           <select [ngModel]="selectedBaseCurrency()" (ngModelChange)="changeBaseCurrency($event)">
-            <option *ngFor="let b of baseCurrencies" [value]="b">{{ b }}</option>
+            @for (b of baseCurrencies; track b) {
+              <option [value]="b">{{ b }}</option>
+            }
           </select>
           <label>Target</label>
           <select [ngModel]="selectedTargetCurrency()" (ngModelChange)="selectedTargetCurrency.set($event)">
-            <option *ngFor="let c of availableCurrencies()" [value]="c">{{ c }}</option>
+            @for (c of availableCurrencies(); track c) {
+              <option [value]="c">{{ c }}</option>
+            }
           </select>
 
           <label>Amount</label>
@@ -139,15 +154,17 @@
         </div>
 
         <div class="exchange-result">
-          <div *ngIf="isLoadingRates()" class="loading-rates">Loading exchange rates...</div>
-          <div *ngIf="!isLoadingRates()">
+          @if (isLoadingRates()) {
+            <div class="loading-rates">Loading exchange rates...</div>
+          }
+          @if (!isLoadingRates()) {
             <p class="rate-line">
               1 {{ selectedBaseCurrency() }} = 
               {{ selectedBaseCurrency() === selectedTargetCurrency() ? '1.0000' : (currencyRates()[selectedTargetCurrency()] ? (currencyRates()[selectedTargetCurrency()].toFixed(4)) : '—') }} 
               {{ selectedTargetCurrency() }}
             </p>
             <p class="rate-line">{{ amount() }} {{ selectedBaseCurrency() }} = {{ getConvertedAmount() !== null ? getConvertedAmount() : '—' }} {{ selectedTargetCurrency() }}</p>
-          </div>
+          }
         </div>
 
         <p class="api-note">📡 Real-time rates from exchangerate.host API</p>

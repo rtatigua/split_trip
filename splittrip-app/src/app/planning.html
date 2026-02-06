@@ -30,19 +30,25 @@
   </div>
 
   <!-- Success Message -->
-  <div class="success-message" *ngIf="showSuccess()">
-    <span class="success-icon">✅</span>
-    <h3>Trip Created Successfully!</h3>
-    <p>Your trip has been created. Redirecting to My Trips...</p>
-  </div>
+  @if (showSuccess()) {
+    <div class="success-message">
+      <span class="success-icon">✅</span>
+      <h3>Trip Created Successfully!</h3>
+      <p>Your trip has been created. Redirecting to My Trips...</p>
+    </div>
+  }
 
   <!-- Error Messages -->
-  <div class="error-box" *ngIf="errors().length > 0">
-    <h3>Please fix the following errors:</h3>
-    <ul>
-      <li *ngFor="let error of errors()">{{ error }}</li>
-    </ul>
-  </div>
+  @if (errors().length > 0) {
+    <div class="error-box">
+      <h3>Please fix the following errors:</h3>
+      <ul>
+        @for (error of errors(); track error) {
+          <li>{{ error }}</li>
+        }
+      </ul>
+    </div>
+  }
 
   <!-- Planning Form -->
   <div class="planning-form-wrapper">
