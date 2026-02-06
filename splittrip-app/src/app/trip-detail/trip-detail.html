@@ -1,0 +1,139 @@
+<!-- Navigation / Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo" (click)="goBack()" style="cursor: pointer;">
+      <span class="logo-icon">✈️</span>
+      <span class="logo-text">SplitTrip</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-links">
+      <a href="#" class="nav-link" (click)="goBack(); $event.preventDefault()">My Trips</a>
+      <a href="#" class="nav-link" (click)="$event.preventDefault()">Home</a>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="navbar-profile">
+      <div class="profile-avatar">👤</div>
+      <span class="profile-name">{{ currentUser().name }}</span>
+      <button class="btn-signout">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="trip-detail-container">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <p>Loading trip details...</p>
+    </div>
+  }
+
+  @if (!isLoading() && errorMessage()) {
+    <div class="error-container">
+      <p class="error-message">{{ errorMessage() }}</p>
+      <button class="btn btn-primary" (click)="goBack()">Back to Trips</button>
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && trip()) {
+    <div class="trip-detail-wrapper">
+      <!-- Trip Header -->
+      <div class="trip-header-section">
+        <button class="btn-back" (click)="goBack()">← Back</button>
+        <div class="trip-title-section">
+          <h1>{{ trip()?.title }}</h1>
+          <span class="trip-status" [ngClass]="(trip()?.status || '').toLowerCase()">{{ trip()?.status }}</span>
+        </div>
+      </div>
+
+      <!-- Trip Image -->
+      <div class="trip-image-section">
+        <div class="trip-image-large">{{ trip()?.image }}</div>
+      </div>
+
+      <!-- Trip Main Info -->
+      <div class="trip-info-grid">
+        <!-- Destination Card -->
+        <div class="info-card">
+          <h3>📍 Destination</h3>
+          <p class="info-value">{{ trip()?.destination }}</p>
+        </div>
+
+        <!-- Duration Card -->
+        <div class="info-card">
+          <h3>⏱️ Duration</h3>
+          <p class="info-value">{{ trip()?.duration }}</p>
+        </div>
+
+        <!-- Budget Card -->
+        <div class="info-card">
+          <h3>💰 Budget</h3>
+          <p class="info-value">{{ trip()?.budget }}</p>
+        </div>
+
+        <!-- Members Card -->
+        <div class="info-card">
+          <h3>👥 Members</h3>
+          <p class="info-value">{{ trip()?.memberCount }} member{{ trip()?.memberCount !== 1 ? 's' : '' }}</p>
+        </div>
+      </div>
+
+      <!-- Trip Owner Info -->
+      <div class="owner-section">
+        <div class="owner-info">
+          <span class="owner-avatar">{{ trip()?.image }}</span>
+          <div class="owner-details">
+            <p class="owner-label">Trip organized by</p>
+            <p class="owner-name">{{ trip()?.ownerName }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trip Description -->
+      <div class="description-section">
+        <h2>About this trip</h2>
+        <p class="description-text">
+          Join {{ trip()?.ownerName }} on an amazing journey to {{ trip()?.destination }}! 
+          This {{ trip()?.duration }} adventure is perfect for travelers looking to explore new destinations 
+          and share expenses with a group of friends. With a budget of {{ trip()?.budget }}, 
+          this trip offers great value for an unforgettable experience.
+        </p>
+      </div>
+
+      <!-- Members List -->
+      <div class="members-section">
+        <h2>Trip Members ({{ trip()?.memberCount }})</h2>
+        <div class="members-list">
+          @for (member of trip()?.members || []; track member) {
+            <div class="member-item">
+              <span class="member-avatar">{{ $index % 2 === 0 ? '👤' : '👥' }}</span>
+              <p class="member-name">Member {{ $index + 1 }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions-section">
+        @if (isOwner()) {
+          <div class="owner-actions">
+            <button class="btn btn-edit" (click)="editTrip()">Edit Trip</button>
+            <button class="btn btn-delete" (click)="deleteTrip()">Delete Trip</button>
+          </div>
+        }
+
+        @if (!isOwner() && isMember()) {
+          <button class="btn btn-leave" (click)="leaveTrip()">Leave Trip</button>
+        }
+
+        @if (!isOwner() && !isMember()) {
+          <button class="btn btn-join" (click)="joinTrip()">Join Trip</button>
+        }
+
+        <button class="btn btn-secondary" (click)="goBack()">Back to All Trips</button>
+      </div>
+    </div>
+  }
+</div>

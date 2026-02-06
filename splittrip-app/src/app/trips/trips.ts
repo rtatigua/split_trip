@@ -126,8 +126,7 @@ export class Trips implements OnInit {
   }
 
   viewTrip(tripId: string) {
-    console.log('Viewing trip:', tripId);
-    // Navigate to trip details
+    this.router.navigate(['/trip', tripId]);
   }
 
   editTrip(tripId: string) {
